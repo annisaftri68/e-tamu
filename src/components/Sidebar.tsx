@@ -68,12 +68,6 @@ const menuItems = [
     path: "/statistik",
   },
   {
-    id: "akun",
-    label: "Manajemen Akun",
-    icon: Shield,
-    path: "/akun",
-  },
-  {
     id: "pengaturan",
     label: "Pengaturan",
     icon: Settings,
