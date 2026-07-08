@@ -20,6 +20,8 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'username', // Ditambahkan agar sistem bisa menyimpan username admin
+        'nip',      // Ditambahkan agar sistem bisa menyimpan NIP admin
         'email',
         'password',
     ];
