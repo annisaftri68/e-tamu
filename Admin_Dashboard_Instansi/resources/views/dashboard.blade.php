@@ -1,5 +1,5 @@
-{{-- Menghubungkan ke layout induk utama Anda (sesuaikan jika nama filenya layouts.admin atau admin.layout) --}}
-@extends('admin.layout')
+{{-- Menghubungkan ke layout induk utama Anda (sesuaikan jika nama filenya layouts.admin-layout) --}}
+@extends('layouts.admin-layout')
 
 @section('content')
 <div class="space-y-6">

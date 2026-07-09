@@ -5,6 +5,7 @@
 @section('content')
 <div class="space-y-6">
     
+    {{-- HEADER HALAMAN --}}
     <div class="flex items-center gap-4 border-b border-gray-200/60 pb-5">
         <div class="p-2.5 bg-blue-50 text-blue-600 rounded-2xl border border-blue-100">
             <i class="ri-file-chart-line text-2xl"></i>
@@ -15,6 +16,7 @@
         </div>
     </div>
 
+    {{-- KARTU STATISTIK KECIL --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white p-5 rounded-2xl border border-gray-200/60 shadow-sm">
             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Semua</p>
@@ -34,9 +36,11 @@
         </div>
     </div>
 
+    {{-- BAGIAN FILTER & TOMBOL UNDUH (EXCEL, PDF, PRINT) --}}
     <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200/60">
         <form action="{{ route('laporan') }}" method="GET" class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             
+            {{-- Form Input Filter --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 flex-1">
                 <div class="relative">
                     <input type="text" name="cari" value="{{ request('cari') }}" placeholder="Cari Nama Tamu..." class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-xs outline-none bg-gray-50/50 focus:border-blue-500 focus:bg-white transition-all text-gray-700">
@@ -64,6 +68,7 @@
                 </div>
             </div>
 
+            {{-- Tombol Aksi Unduh Dokumen Terintegrasi --}}
             <div class="flex items-center gap-2 flex-wrap sm:justify-end">
                 <a href="{{ route('laporan.excel', request()->query()) }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all active:scale-98">
                     <i class="ri-file-excel-2-line text-sm"></i> 
@@ -83,6 +88,7 @@
         </form>
     </div>
 
+    {{-- TABEL DATA KUNJUNGAN TAMU --}}
     <div class="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
@@ -135,12 +141,12 @@
                                 </div>
                             </td>
                         </tr>
-                    @endforelse
+                    @endempty
                 </tbody>
             </table>
         </div>
         
-        {{-- BLOK LINK PAGINASI LARAVEL (Jika diperlukan) --}}
+        {{-- BLOK LINK PAGINASI LARAVEL --}}
         @if(method_exists($tamus ?? null, 'links'))
             <div class="p-4 bg-gray-50 border-t border-gray-100">
                 {{ $tamus->appends(request()->query())->links() }}

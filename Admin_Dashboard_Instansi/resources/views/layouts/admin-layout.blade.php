@@ -19,19 +19,22 @@
         <div class="w-72 bg-gradient-to-b from-[#1a365d] via-[#1e40af] to-[#2563eb] text-white flex flex-col justify-between p-5 relative shadow-xl z-10 flex-shrink-0">
             <div>
                 <div class="flex items-center gap-3 mb-6">
-                    <div class="p-2 bg-white/10 rounded-lg"><i class="ri-menu-line text-xl"></i></div>
+                    <div class="p-2 bg-white/10 rounded-lg">
+                        <img src="{{ asset('images/logo-dinas-bkpsdm.png') }}" alt="Logo Instansi" class="w-8 h-8 object-contain" />
+                    </div>
                     <div>
-                        <h2 class="font-bold text-sm tracking-wide uppercase">E-TAMU DIGITAL</h2>
+                        <h2 class="font-bold text-sm tracking-wide uppercase">Admin E Tamu Digital</h2>
                         <p class="text-[11px] text-gray-300">BKPSDM Kab. Tegal</p>
                     </div>
                 </div>
 
+                @php $user = auth()->user(); @endphp
                 <div class="bg-white/10 rounded-xl p-4 flex items-center gap-3 mb-6 border border-white/10 relative">
-                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center font-bold text-lg shadow-inner">A</div>
+                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center font-bold text-lg shadow-inner">{{ strtoupper(substr($user->name ?? 'A', 0, 1)) }}</div>
                     <div>
-                        <h4 class="font-semibold text-sm leading-tight">Administrator</h4>
-                        <p class="text-[11px] text-gray-300">Admin BKPSDM</p>
-                        <p class="text-[10px] text-gray-400 mt-0.5">198701012024001</p>
+                        <h4 class="font-semibold text-sm leading-tight">{{ $user->name ?? 'Administrator' }}</h4>
+                        <p class="text-[11px] text-gray-300">{{ $user->username ?? 'Admin BKPSDM' }}</p>
+                        <p class="text-[10px] text-gray-400 mt-0.5">{{ $user->nip ?? '' }}</p>
                     </div>
                     <span class="absolute -right-2 top-1/2 -translate-y-1/2 w-5 h-5 bg-blue-600 rounded-full border-2 border-white flex items-center justify-center text-[10px] cursor-pointer shadow-md"><i class="ri-arrow-left-s-line text-white"></i></span>
                 </div>

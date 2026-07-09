@@ -35,11 +35,21 @@ class DashboardController extends Controller
         $grafikData = [];
 
         // Melakukan perulangan mundur 7 hari ke belakang untuk mengumpulkan statistik harian
+        $hariIndonesia = [
+            'Sunday' => 'Minggu',
+            'Monday' => 'Senin',
+            'Tuesday' => 'Selasa',
+            'Wednesday' => 'Rabu',
+            'Thursday' => 'Kamis',
+            'Friday' => 'Jumat',
+            'Saturday' => 'Sabtu',
+        ];
+
         for ($i = 6; $i >= 0; $i--) {
             $tanggal = Carbon::today()->subDays($i);
-            
-            // Mengambil nama hari dalam Bahasa Indonesia (Contoh: Sen, Sel, Rab)
-            $grafikLabels[] = $tanggal->translatedFormat('D');
+
+            $namaHari = $hariIndonesia[$tanggal->format('l')] ?? $tanggal->format('l');
+            $grafikLabels[] = $namaHari;
             
             // Hitung jumlah tamu yang datang pada tanggal tersebut di database
             $jumlahTamuHariItu = Tamu::whereDate('created_at', $tanggal)->count();

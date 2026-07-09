@@ -29,20 +29,28 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
-                <tr id="row-tamu-1" class="hover:bg-gray-50/50 transition">
-                    <td class="p-4 text-sm text-gray-600">1</td>
-                    <td class="p-4 text-sm font-medium text-gray-900">nining</td>
-                    <td class="p-4 text-sm text-gray-500">33282837329383835</td>
-                    <td class="p-4 text-sm text-gray-600">SMK</td>
-                    <td class="p-4 text-sm text-gray-600">PKL</td>
-                    <td class="p-4 text-sm text-gray-600">Sekretariat</td>
-                    <td class="p-4 text-sm text-center">
-                        <div class="flex justify-center gap-3 text-lg">
-                            <button class="text-blue-500 hover:text-blue-700 transition"><i class="ri-eye-line"></i></button>
-                            <button onclick="bukaModalHapus('1', 'nining')" class="text-red-500 hover:text-red-700 transition"><i class="ri-delete-bin-line"></i></button>
-                        </div>
-                    </td>
-                </tr>
+                @forelse($tamus ?? [] as $tamu)
+                    <tr class="hover:bg-gray-50/50 transition">
+                        <td class="p-4 text-sm text-gray-600">{{ $loop->iteration }}</td>
+                        <td class="p-4 text-sm font-medium text-gray-900">{{ $tamu->nama }}</td>
+                        <td class="p-4 text-sm text-gray-500">{{ $tamu->nik ?? '-' }}</td>
+                        <td class="p-4 text-sm text-gray-600">{{ $tamu->instansi }}</td>
+                        <td class="p-4 text-sm text-gray-600">{{ $tamu->keperluan }}</td>
+                        <td class="p-4 text-sm text-gray-600">{{ $tamu->tujuan ?? $tamu->bidang }}</td>
+                        <td class="p-4 text-sm text-center">
+                            <div class="flex justify-center gap-3 text-lg">
+                                <button class="text-blue-500 hover:text-blue-700 transition"><i class="ri-eye-line"></i></button>
+                                <button onclick="bukaModalHapus('{{ $tamu->id }}', '{{ $tamu->nama }}')" class="text-red-500 hover:text-red-700 transition"><i class="ri-delete-bin-line"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="7" class="p-8 text-center text-gray-500">
+                            Belum ada data tamu. Silakan tambahkan tamu atau periksa kembali tabel database.
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

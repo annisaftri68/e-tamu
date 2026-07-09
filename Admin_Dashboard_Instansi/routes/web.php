@@ -10,6 +10,12 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KunjunganController;
 use App\Http\Controllers\LaporanController;
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
+
 // --- HANYA BISA DIAKSES JIKA BELUM LOGIN (GUEST) ---
 Route::middleware('guest')->group(function () {
     Route::get('/login', function () {
@@ -51,9 +57,9 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('login');
     })->name('logout');
 
-    // ==========================================
+    // ==========================================================
     //  JALUR ROUTE UTAMA (SUDAH TERHUBUNG CONTROLLER)
-    // ==========================================
+    // ==========================================================
 
     // Panel Utama Admin Dashboard (Menggunakan DashboardController)
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -64,17 +70,16 @@ Route::middleware('auth')->group(function () {
     // Laporan Kunjungan Tamu (Menggunakan LaporanController untuk Filter & Eksport)
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
     
-    // Penunjang Aksi Dokumen di Menu Laporan (Silakan sesuaikan nama method di LaporanController Anda)
+    // Penunjang Aksi Dokumen di Menu Laporan
     Route::get('/laporan/excel', [LaporanController::class, 'exportExcel'])->name('laporan.excel');
     Route::get('/laporan/pdf', [LaporanController::class, 'exportPdf'])->name('laporan.pdf');
     Route::get('/laporan/print', [LaporanController::class, 'print'])->name('laporan.print');
 
-    // ==========================================
+    // ==========================================================
     //  JALUR ROUTE PEMELIHARAAN LAINNYA
-    // ==========================================
+    // ==========================================================
     
     Route::get('/data-tamu', function () {
-        // Jika data tamu ingin dibuatkan controller terpisah nantinya, silakan ubah bagian ini
         $tamus = \App\Models\Tamu::latest()->get();
         return view('data-tamu', compact('tamus'));
     })->name('data.tamu');
@@ -84,7 +89,35 @@ Route::middleware('auth')->group(function () {
     })->name('jadwal.tamu');
 
     Route::get('/statistik', function () {
-        return view('statistik');
+        $totalTamu = \App\Models\Tamu::count();
+        $menunggu = \App\Models\Tamu::where('status', 'Menunggu')->count();
+        $selesai = \App\Models\Tamu::where('status', 'Selesai')->count();
+
+        $statistikLabels = [];
+        $statistikData = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $bulan = now()->subMonths($i);
+            $statistikLabels[] = $bulan->translatedFormat('M');
+            $statistikData[] = \App\Models\Tamu::whereYear('created_at', $bulan->year)
+                ->whereMonth('created_at', $bulan->month)
+                ->count();
+        }
+
+        $bidangLabels = ['Sekretariat', 'MUTPRO', 'PSDM', 'PPEKA'];
+        $bidangData = [];
+        foreach ($bidangLabels as $bidang) {
+            $bidangData[] = \App\Models\Tamu::where('bidang', $bidang)->count();
+        }
+
+        return view('statistik', compact(
+            'totalTamu',
+            'menunggu',
+            'selesai',
+            'statistikLabels',
+            'statistikData',
+            'bidangLabels',
+            'bidangData'
+        ));
     })->name('statistik');
 
 

@@ -20,7 +20,7 @@ class KunjunganController extends Controller
         $antrianMenunggu  = Tamu::whereDate('created_at', Carbon::today())->where('status', 'Menunggu')->count();
 
         return view('kunjungan-hari-ini', compact(
-            'tamu', 
+            'tamus', 
             'totalAntrian', 
             'antrianSelesai', 
             'antrianDiproses', 
