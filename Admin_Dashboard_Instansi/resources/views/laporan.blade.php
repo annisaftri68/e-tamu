@@ -107,7 +107,7 @@
                     @forelse($tamus ?? [] as $tamu)
                         <tr class="hover:bg-blue-50/10 transition-colors">
                             <td class="p-4 font-medium text-gray-500">{{ $loop->iteration }}</td>
-                            <td class="p-4 font-bold text-gray-950 capitalize">{{ $tamu->nama }}</td>
+                            <td class="p-4 font-bold text-gray-950 capitalize">{{ $tamu->nama_lengkap ?? $tamu->nama }}</td>
                             <td class="p-4 text-gray-600">{{ $tamu->instansi }}</td>
                             <td class="p-4 text-gray-600">{{ $tamu->tujuan ?? $tamu->bidang }}</td>
                             <td class="p-4">

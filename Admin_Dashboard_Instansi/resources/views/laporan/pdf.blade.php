@@ -30,7 +30,7 @@
             @foreach($dataTamu as $index => $tamu)
             <tr>
                 <td>{{ $index + 1 }}</td>
-                <td>{{ $tamu->nama }}</td>
+                <td>{{ $tamu->nama_lengkap ?? $tamu->nama }}</td>
                 <td>{{ $tamu->instansi }}</td>
                 <td>{{ $tamu->tujuan ?? $tamu->bidang }}</td>
                 <td>{{ $tamu->created_at ? $tamu->created_at->format('d-m-Y H:i') : '-' }}</td>

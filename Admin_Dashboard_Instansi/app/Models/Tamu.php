@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Tamu extends Model
 {
@@ -36,4 +37,57 @@ class Tamu extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    protected $appends = ['nama'];
+
+    public function getNamaAttribute(): ?string
+    {
+        return $this->attributes['nama_lengkap'] ?? $this->attributes['nama'] ?? null;
+    }
+
+    public static function archiveMonthly(): int
+    {
+        $previousMonthStart = now()->copy()->startOfMonth()->subMonth();
+        $previousMonthEnd = $previousMonthStart->copy()->endOfMonth();
+
+        $records = static::query()
+            ->whereBetween('created_at', [$previousMonthStart, $previousMonthEnd])
+            ->get();
+
+        if ($records->isEmpty()) {
+            return 0;
+        }
+
+        $payload = $records->map(function ($record) {
+            return [
+                'nik' => $record->nik,
+                'nama_lengkap' => $record->nama_lengkap ?? $record->nama,
+                'instansi' => $record->instansi,
+                'nomor_hp' => $record->nomor_hp,
+                'keperluan' => $record->keperluan,
+                'bidang' => $record->bidang,
+                'nomor_antrian' => $record->nomor_antrian,
+                'tanggal_kunjungan' => $record->tanggal_kunjungan,
+                'status' => $record->status,
+                'saran' => $record->saran,
+                'kemudahan_penggunaan' => $record->kemudahan_penggunaan,
+                'tampilan_sistem' => $record->tampilan_sistem,
+                'kecepatan_sistem' => $record->kecepatan_sistem,
+                'stabilitas_sistem' => $record->stabilitas_sistem,
+                'keramahan_pegawai' => $record->keramahan_pegawai,
+                'kecepatan_pelayanan' => $record->kecepatan_pelayanan,
+                'kejelasan_informasi' => $record->kejelasan_informasi,
+                'kepuasan_keseluruhan' => $record->kepuasan_keseluruhan,
+                'created_at' => $record->created_at,
+                'updated_at' => $record->updated_at,
+            ];
+        })->all();
+
+        DB::transaction(function () use ($records, $payload) {
+            TamuArsip::insert($payload);
+            $records->each(fn ($record) => $record->delete());
+        });
+
+        return $records->count();
+    }
 }

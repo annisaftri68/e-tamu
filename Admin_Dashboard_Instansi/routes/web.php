@@ -78,11 +78,22 @@ Route::middleware('auth')->group(function () {
     // ==========================================================
     //  JALUR ROUTE PEMELIHARAAN LAINNYA
     // ==========================================================
-    
+
     Route::get('/data-tamu', function () {
-        $tamus = \App\Models\Tamu::latest()->get();
+        \App\Models\Tamu::archiveMonthly();
+
+        $tamus = \App\Models\Tamu::whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->latest()
+            ->get();
+
         return view('data-tamu', compact('tamus'));
     })->name('data.tamu');
+
+    Route::get('/arsip', function () {
+        $tamus = \App\Models\TamuArsip::latest()->paginate(15);
+        return view('arsip', compact('tamus'));
+    })->name('arsip');
 
     Route::get('/jadwal-tamu', function () {
         return view('jadwal-tamu');

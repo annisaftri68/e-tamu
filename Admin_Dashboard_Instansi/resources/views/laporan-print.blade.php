@@ -26,7 +26,7 @@
                 @foreach($tamus as $index => $tamu)
                     <tr class="border-b border-slate-200">
                         <td class="px-4 py-3">{{ $index + 1 }}</td>
-                        <td class="px-4 py-3">{{ $tamu->nama }}</td>
+                        <td class="px-4 py-3">{{ $tamu->nama_lengkap ?? $tamu->nama }}</td>
                         <td class="px-4 py-3">{{ $tamu->instansi }}</td>
                         <td class="px-4 py-3">{{ $tamu->tujuan ?? $tamu->bidang }}</td>
                         <td class="px-4 py-3">{{ $tamu->status ?? '-' }}</td>

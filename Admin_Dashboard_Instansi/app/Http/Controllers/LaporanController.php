@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Tamu; // Model Tamu yang benar di project ini
+use App\Models\Tamu;
+use App\Models\TamuArsip;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf; // Pastikan sudah install barryvdh/laravel-dompdf
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanController extends Controller
 {
@@ -14,6 +15,8 @@ class LaporanController extends Controller
      */
     public function index(Request $request)
     {
+        Tamu::archiveMonthly();
+
         $query = Tamu::query();
 
         if ($request->filled('cari')) {
@@ -63,44 +66,61 @@ class LaporanController extends Controller
      */
     public function exportExcel(Request $request)
     {
-        $query = $this->buildLaporanQuery($request);
-        
-        $dataTamu = $query->latest()->get();
-
         $filename = "laporan_data_tamu_" . date('Y-m-d') . ".xls";
 
-        // Mengatur header agar browser mendownloadnya sebagai file Excel (.xls)
         header("Content-Type: application/vnd.ms-excel");
         header("Content-Disposition: attachment; filename=\"$filename\"");
         header("Pragma: no-cache");
         header("Expires: 0");
 
-        // Membuat output berupa tabel HTML yang otomatis dibaca rapi oleh Microsoft Excel
-        echo "<table border='1'>";
-        echo "<thead>
-                <tr>
-                    <th style='background-color: #4F81BD; color: white;'>No</th>
-                    <th style='background-color: #4F81BD; color: white;'>Nama Tamu</th>
-                    <th style='background-color: #4F81BD; color: white;'>Instansi/Perusahaan</th>
-                    <th style='background-color: #4F81BD; color: white;'>Keperluan</th>
-                    <th style='background-color: #4F81BD; color: white;'>Tanggal Kunjungan</th>
-                </tr>
-              </thead>";
-        echo "<tbody>";
-        
-        foreach ($dataTamu as $index => $tamu) {
-            echo "<tr>";
-            echo "<td>" . ($index + 1) . "</td>";
-            echo "<td>" . e($tamu->nama) . "</td>"; // Sesuaikan properti kolom model Anda
-            echo "<td>" . e($tamu->instansi) . "</td>";
-            echo "<td>" . e($tamu->keperluan) . "</td>";
-            echo "<td>" . $tamu->created_at->format('d-m-Y H:i') . "</td>";
-            echo "</tr>";
-        }
-        
-        echo "</tbody>";
-        echo "</table>";
+        echo $this->buildMonthlyExcelTables($request);
         exit;
+    }
+
+    public function buildMonthlyExcelTables(Request $request, $dataTamu = null): string
+    {
+        $activeRecords = $this->buildLaporanQuery($request, Tamu::class)->latest()->get();
+        $archiveRecords = $this->buildLaporanQuery($request, TamuArsip::class)->latest()->get();
+
+        $dataTamu = $activeRecords->concat($archiveRecords)
+            ->sortByDesc(fn ($tamu) => $tamu->created_at ? $tamu->created_at->timestamp : 0)
+            ->values();
+
+        $groups = $dataTamu->groupBy(function ($tamu) {
+            return $tamu->created_at?->translatedFormat('F Y') ?? 'Tanpa Bulan';
+        });
+
+        $html = '';
+
+        foreach ($groups as $bulan => $records) {
+            $html .= "<h3 style='margin: 16px 0 8px; font-size: 14px;'>Bulan: {$bulan}</h3>";
+            $html .= "<table border='1' style='margin-bottom: 12px;'>";
+            $html .= "<thead>
+                    <tr>
+                        <th style='background-color: #4F81BD; color: white;'>No</th>
+                        <th style='background-color: #4F81BD; color: white;'>Nama Tamu</th>
+                        <th style='background-color: #4F81BD; color: white;'>Instansi/Perusahaan</th>
+                        <th style='background-color: #4F81BD; color: white;'>Keperluan</th>
+                        <th style='background-color: #4F81BD; color: white;'>Tanggal Kunjungan</th>
+                    </tr>
+                  </thead>";
+            $html .= "<tbody>";
+
+            foreach ($records as $index => $tamu) {
+                $html .= "<tr>";
+                $html .= "<td>" . ($index + 1) . "</td>";
+                $html .= "<td>" . e($tamu->nama_lengkap ?? $tamu->nama ?? '-') . "</td>";
+                $html .= "<td>" . e($tamu->instansi ?? '-') . "</td>";
+                $html .= "<td>" . e($tamu->keperluan ?? '-') . "</td>";
+                $html .= "<td>" . ($tamu->created_at ? $tamu->created_at->format('d-m-Y H:i') : '-') . "</td>";
+                $html .= "</tr>";
+            }
+
+            $html .= "</tbody>";
+            $html .= "</table>";
+        }
+
+        return $html;
     }
 
     /**
@@ -114,16 +134,17 @@ class LaporanController extends Controller
         return view('laporan-print', compact('tamus'));
     }
 
-    protected function buildLaporanQuery(Request $request)
+    protected function buildLaporanQuery(Request $request, string $modelClass = Tamu::class)
     {
-        $query = Tamu::query();
+        $query = $modelClass::query();
 
         if ($request->filled('cari')) {
             $query->where(function ($sub) use ($request) {
-                $sub->where('nama', 'like', '%'.$request->cari.'%')
+                $sub->where('nama_lengkap', 'like', '%'.$request->cari.'%')
+                    ->orWhere('nama', 'like', '%'.$request->cari.'%')
                     ->orWhere('instansi', 'like', '%'.$request->cari.'%')
-                    ->orWhere('tujuan', 'like', '%'.$request->cari.'%')
-                    ->orWhere('bidang', 'like', '%'.$request->cari.'%');
+                    ->orWhere('bidang', 'like', '%'.$request->cari.'%')
+                    ->orWhere('keperluan', 'like', '%'.$request->cari.'%');
             });
         }
 

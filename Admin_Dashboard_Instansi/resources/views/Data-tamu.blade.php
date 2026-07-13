@@ -32,11 +32,11 @@
                 @forelse($tamus ?? [] as $tamu)
                     <tr class="hover:bg-gray-50/50 transition">
                         <td class="p-4 text-sm text-gray-600">{{ $loop->iteration }}</td>
-                        <td class="p-4 text-sm font-medium text-gray-900">{{ $tamu->nama }}</td>
+                        <td class="p-4 text-sm font-medium text-gray-900">{{ $tamu->nama_lengkap ?? $tamu->nama ?? '-' }}</td>
                         <td class="p-4 text-sm text-gray-500">{{ $tamu->nik ?? '-' }}</td>
                         <td class="p-4 text-sm text-gray-600">{{ $tamu->instansi }}</td>
                         <td class="p-4 text-sm text-gray-600">{{ $tamu->keperluan }}</td>
-                        <td class="p-4 text-sm text-gray-600">{{ $tamu->tujuan ?? $tamu->bidang }}</td>
+                        <td class="p-4 text-sm text-gray-600">{{ $tamu->tujuan ?? $tamu->bidang ?? '-' }}</td>
                         <td class="p-4 text-sm text-center">
                             <div class="flex justify-center gap-3 text-lg">
                                 <button class="text-blue-500 hover:text-blue-700 transition"><i class="ri-eye-line"></i></button>
