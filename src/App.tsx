@@ -4,6 +4,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
 
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -15,72 +16,95 @@ import Kunjungan from "./components/KunjunganHariIni";
 import Jadwal from "./pages/Jadwal";
 import Akun from "./pages/Akun";
 import Pengaturan from "./pages/Pengaturan";
-import AdminLayout from "./layouts/AdminLayout";
+import PrivateRoute from "./routes/PrivateRoute";
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route
-          path="/"
-          element={<Login />}
-        />
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Login />} />
 
-        <Route
-          path="/dashboard"
-          element={<Dashboard />}
-        />
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
 
-        <Route
-          path="/data-tamu"
-          element={<DataTamu />}
-        />
+          <Route
+            path="/data-tamu"
+            element={
+              <PrivateRoute>
+                <DataTamu />
+              </PrivateRoute>
+            }
+          />
 
-        <Route
-          path="/kunjungan"
-          element={<Kunjungan />}
-        />
+          <Route
+            path="/kunjungan"
+            element={
+              <PrivateRoute>
+                <Kunjungan />
+              </PrivateRoute>
+            }
+          />
 
-        <Route
-          path="/jadwal"
-          element={<Jadwal />}
-        />
+          <Route
+            path="/jadwal"
+            element={
+              <PrivateRoute>
+                <Jadwal />
+              </PrivateRoute>
+            }
+          />
 
-        <Route
-          path="/laporan"
-          element={<Laporan />}
-        />
+          <Route
+            path="/laporan"
+            element={
+              <PrivateRoute>
+                <Laporan />
+              </PrivateRoute>
+            }
+          />
 
-        <Route
-          path="/statistik"
-          element={<Statistik />}
-        />
+          <Route
+            path="/statistik"
+            element={
+              <PrivateRoute>
+                <Statistik />
+              </PrivateRoute>
+            }
+          />
 
-        <Route
-          path="/akun"
-          element={<Akun />}
-        />
+          <Route
+            path="/akun"
+            element={
+              <PrivateRoute>
+                <Akun />
+              </PrivateRoute>
+            }
+          />
 
-        <Route
-          path="/pengaturan"
-          element={<Pengaturan />}
-        />
+          <Route
+            path="/pengaturan"
+            element={
+              <PrivateRoute>
+                <Pengaturan />
+              </PrivateRoute>
+            }
+          />
 
-        <Route
-          path="/kiosk"
-          element={<Kiosk />}
-        />
+          <Route path="/kiosk" element={<Kiosk />} />
 
-        <Route
-          path="*"
-          element={
-            <Navigate
-              to="/dashboard"
-              replace
-            />
-          }
-        />
-      </Routes>
+          <Route
+            path="*"
+            element={<Navigate to="/dashboard" replace />}
+          />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

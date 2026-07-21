@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -20,9 +19,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'username', // Ditambahkan agar sistem bisa menyimpan username admin
-        'nip',      // Ditambahkan agar sistem bisa menyimpan NIP admin
-        'email',
+        'nip',      // Hanya nip yang diizinkan untuk diisi/update
         'password',
     ];
 
@@ -44,7 +41,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
+            // 'email_verified_at' dihapus jika kolom ini tidak ada di DB
             'password' => 'hashed',
         ];
     }

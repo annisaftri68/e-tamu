@@ -1,5 +1,6 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 import Sidebar from "../components/Sidebar";
 
 interface AdminLayoutProps {
@@ -10,17 +11,13 @@ export default function AdminLayout({
   children,
 }: AdminLayoutProps) {
   const navigate = useNavigate();
+  const { user, logout }: any = useContext(AuthContext);
 
   const [activeMenu, setActiveMenu] =
     useState("dashboard");
 
-  const user = {
-    nama: "Administrator",
-    jabatan: "Admin BKPSDM",
-    nip: "198701012024001",
-  };
-
   const handleLogout = () => {
+    logout();
     navigate("/");
   };
 
@@ -30,7 +27,11 @@ export default function AdminLayout({
         activeMenu={activeMenu}
         onMenuChange={setActiveMenu}
         onLogout={handleLogout}
-        user={user}
+        user={{
+          nama: user?.name || "Administrator",
+          jabatan: user?.username || "Admin BKPSDM",
+          nip: user?.nip || "",
+        }}
       />
 
       <main className="flex-1 p-6">
